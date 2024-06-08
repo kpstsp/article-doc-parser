@@ -21,6 +21,7 @@ def start_new_block(title):
     }
 
 def add_subtopic(block, subtitle, text):
+    print("Added as subtopic")
     block["Subtopics"].append({
         "Subtitle": subtitle,
         "Text": text
@@ -28,11 +29,15 @@ def add_subtopic(block, subtitle, text):
 
 for para in document.paragraphs:
     text = para.text.strip()
+    print("Start analizing text")
 
     if text == "":
         empty_para_count += 1
+        print("ENPTY string")
+
     else:
         empty_para_count = 0
+        print(">>> {} ...".format(text[0:24]))
 
     # if empty_para_count > 1:
     #     continue
@@ -62,7 +67,7 @@ for para in document.paragraphs:
                         introduction = ""
                     else:
                         introduction = text
-                    print("Introduction is found : /n")
+                    print("Introduction is found : \n")
                     print(text)
                     current_block["Introduction"] = introduction
                     new_block_started = False
@@ -87,8 +92,8 @@ for para in document.paragraphs:
                         subtopic_text = text
                         print("Found subtopic: {}".format(text))
                         sleep(timeout)
-                    # else:
-                    #     subtopic_text += " " + text
+                    else:
+                        subtopic_text += "\n" + text
 
             # if empty_para_count == 1 and subtitle and subtopic_text:
             #     add_subtopic(current_block, subtitle, subtopic_text)

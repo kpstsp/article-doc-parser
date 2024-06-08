@@ -1,4 +1,5 @@
 from docx import Document
+from time import sleep
 
 document = Document("docs//test.docx")
 blocks = []
@@ -10,6 +11,7 @@ subtitle = None
 subtopic_text = None
 empty_para_count = 0
 new_block_started = False
+timeout=0
 
 def start_new_block(title):
     return {
@@ -32,24 +34,27 @@ for para in document.paragraphs:
     else:
         empty_para_count = 0
 
-    if empty_para_count > 1:
-        continue
+    # if empty_para_count > 1:
+    #     continue
 
     if empty_para_count == 1 and not new_block_started:
         if subtitle and subtopic_text:
             add_subtopic(current_block, subtitle, subtopic_text)
         subtitle = None
         subtopic_text = None
-        empty_para_count = 0
+        # empty_para_count = 0
 
     if text != "":
         if not current_block:
+            print("New block parse")
             title = text
+            print("title is found {}".format(text))
             current_block = start_new_block(title)
             introduction = None
             subtitle = None
             subtopic_text = None
             new_block_started = True
+            sleep(timeout)
         elif current_block:
             if new_block_started:
                 if introduction is None:
@@ -57,34 +62,53 @@ for para in document.paragraphs:
                         introduction = ""
                     else:
                         introduction = text
+                    print("Introduction is found : /n")
+                    print(text)
                     current_block["Introduction"] = introduction
                     new_block_started = False
                 elif subtitle is None:
                     subtitle = text
+                    print("Found subtitle: {}".format(text))
+                    sleep(timeout)
                 else:
                     if subtopic_text is None:
+                        print("Found subtopic: {}".format(text))
+                        sleep(timeout)
                         subtopic_text = text
                     else:
                         subtopic_text += " " + text
             else:
                 if subtitle is None:
                     subtitle = text
+                    print("Found subtitle: {}".format(text))
+                    sleep(timeout)
                 else:
                     if subtopic_text is None:
                         subtopic_text = text
-                    else:
-                        subtopic_text += " " + text
+                        print("Found subtopic: {}".format(text))
+                        sleep(timeout)
+                    # else:
+                    #     subtopic_text += " " + text
 
-            if empty_para_count == 1 and subtitle and subtopic_text:
-                add_subtopic(current_block, subtitle, subtopic_text)
-                subtitle = None
-                subtopic_text = None
+            # if empty_para_count == 1 and subtitle and subtopic_text:
+            #     add_subtopic(current_block, subtitle, subtopic_text)
+            #     print("Subtopic added to block")
+            #     sleep(timeout)
+            #     subtitle = None
+            #     subtopic_text = None
 
 # Finalize the last block if there is one
-if current_block:
-    if subtitle and subtopic_text:
-        add_subtopic(current_block, subtitle, subtopic_text)
-    blocks.append(current_block)
+    if current_block:
+        print("Empty para count {}".format(empty_para_count)+"."*empty_para_count)
+        if empty_para_count>4:
+            print("Current block set as None")
+            blocks.append(current_block)
+            current_block = None
+        # if subtitle and subtopic_text:
+        #     add_subtopic(current_block, subtitle, subtopic_text)
+        #     sleep(timeout)
+        
+        
 
 # Print and debug the parsed data
 # print("Parsed Data:")
